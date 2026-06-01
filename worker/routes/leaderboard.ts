@@ -1,0 +1,7 @@
+import { Hono } from "hono";
+import type { Env } from "../types";
+
+export const leaderboardRoutes = new Hono<{
+  Bindings: Env;
+  Variables: { role: string };
+}>();
