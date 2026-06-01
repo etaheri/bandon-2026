@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { themeCss } from "./ui/theme";
 import { isAuthed, getPlayerId } from "./state/session";
 import { Login } from "./screens/Login";
@@ -7,6 +7,7 @@ import { ScoreEntry } from "./screens/ScoreEntry";
 import { TeeSheet } from "./screens/TeeSheet";
 import { Board } from "./screens/Board";
 import { Admin } from "./screens/Admin";
+import { Rules } from "./screens/Rules";
 
 export function App() {
   const [, force] = useState(0);
@@ -18,16 +19,28 @@ export function App() {
   }, []);
 
   // Public, no login: board (incl. TV), tee sheet, home.
-  if (path.startsWith("/board")) return <Board tv={tv} />;
-  if (path.startsWith("/tee")) return <TeeSheet />;
-
-  // Login required only to enter scores or admin.
-  if (path.startsWith("/score") || path.startsWith("/admin")) {
-    if (!isAuthed() || !getPlayerId()) return <Login onDone={() => force(n => n + 1)} />;
-    return path.startsWith("/score") ? <ScoreEntry /> : <Admin />;
+  let screen: ReactNode;
+  if (path.startsWith("/board")) screen = <Board tv={tv} />;
+  else if (path.startsWith("/rules")) screen = <Rules />;
+  else if (path.startsWith("/tee")) screen = <TeeSheet />;
+  else if (path.startsWith("/score") || path.startsWith("/admin")) {
+    // Login required only to enter scores or admin.
+    if (!isAuthed() || !getPlayerId()) screen = <Login onDone={() => force(n => n + 1)} />;
+    else screen = path.startsWith("/score") ? <ScoreEntry /> : <Admin />;
+  } else {
+    screen = <Home />; // public
   }
 
-  return <Home />; // public
+  return (
+    <>
+      {screen}
+      {/* CRT scanline overlay, app-wide. Hidden on the TV board so it never
+          interferes with a projected leaderboard.
+          TEMP: commented out to evaluate a cleaner, scanline-free look.
+          Re-enable by uncommenting the line below. */}
+      {/* {!tv && <div className="bc-crt" />} */}
+    </>
+  );
 }
 
 export const go = (p: string) => { window.history.pushState({}, "", p); window.dispatchEvent(new PopStateEvent("popstate")); };
