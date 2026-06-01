@@ -244,8 +244,10 @@ export async function insertPick(
       .bind(pick.id, pick.propId, pick.optionId, pick.playerId, pick.createdAt)
       .run();
     return "ok";
-  } catch {
-    return "dup"; // UNIQUE(prop_id,player_id) violation
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (/UNIQUE/.test(msg)) return "dup"; // one pick per player per prop
+    throw e; // unexpected failure — don't mask as a duplicate
   }
 }
 
