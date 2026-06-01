@@ -13,8 +13,9 @@ export function roundResult(
   let holesPlayed = 0;
   for (const hole of holes) {
     const gross = scores[hole.number];
-    if (gross == null) continue;
+    if (gross == null) continue;      // not played yet
     holesPlayed++;
+    if (gross === 0) continue;        // picked up: played, 0 points
     points += holePoints({ gross, par: hole.par, strokes: strokesReceived(phc, hole.strokeIndex) });
   }
   const quota = player.quotaOverride ?? 36;

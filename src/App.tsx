@@ -17,17 +17,17 @@ export function App() {
     const s = document.createElement("style"); s.textContent = themeCss; document.head.appendChild(s);
   }, []);
 
-  // Board kiosk mode is public-ish but still behind auth in v1.
-  if (!isAuthed() || !getPlayerId()) {
-    if (path === "/board" && tv) { /* allow TV without login if desired later */ }
-    return <Login onDone={() => force(n => n + 1)} />;
+  // Public, no login: board (incl. TV), tee sheet, home.
+  if (path.startsWith("/board")) return <Board tv={tv} />;
+  if (path.startsWith("/tee")) return <TeeSheet />;
+
+  // Login required only to enter scores or admin.
+  if (path.startsWith("/score") || path.startsWith("/admin")) {
+    if (!isAuthed() || !getPlayerId()) return <Login onDone={() => force(n => n + 1)} />;
+    return path.startsWith("/score") ? <ScoreEntry /> : <Admin />;
   }
 
-  if (path.startsWith("/board")) return <Board tv={tv} />;
-  if (path.startsWith("/score")) return <ScoreEntry />;
-  if (path.startsWith("/tee")) return <TeeSheet />;
-  if (path.startsWith("/admin")) return <Admin />;
-  return <Home />;
+  return <Home />; // public
 }
 
 export const go = (p: string) => { window.history.pushState({}, "", p); window.dispatchEvent(new PopStateEvent("popstate")); };

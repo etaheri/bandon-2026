@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 import type { Env } from "../types";
-import { requireSession } from "../auth";
 import {
   getPlayers,
   getRounds,
@@ -14,7 +13,7 @@ export const stateRoutes = new Hono<{
   Variables: { role: string };
 }>();
 
-stateRoutes.get("/state", requireSession, async (c) => {
+stateRoutes.get("/state", async (c) => {
   const [players, rounds, tee, settings, courses] = await Promise.all([
     getPlayers(c.env.DB),
     getRounds(c.env.DB),

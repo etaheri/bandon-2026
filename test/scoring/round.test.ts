@@ -44,4 +44,17 @@ describe("roundResult", () => {
     const r = roundResult(player, holes, scores, { allowance: 0.75 });
     expect(r.holesPlayed).toBe(1);
   });
+
+  it("treats gross 0 as a pick-up: played, zero points, counts toward proration", () => {
+    const r = roundResult(player, holes, { 1: 0 }, { allowance: 0.75 });
+    expect(r.holesPlayed).toBe(1);
+    expect(r.points).toBe(0);
+    expect(r.proratedQuota).toBeCloseTo(2);
+    expect(r.result).toBeCloseTo(-2);
+  });
+
+  it("distinguishes pick-up (0) from not-played (null)", () => {
+    const r = roundResult(player, holes, { 1: 0, 2: null }, { allowance: 0.75 });
+    expect(r.holesPlayed).toBe(1);
+  });
 });
