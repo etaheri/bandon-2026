@@ -2,10 +2,11 @@
   "name": "bandon",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "private": true,
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
@@ -15,29 +16,25 @@
     "db:migrate:local": "wrangler d1 migrations apply bandon-cup --local",
     "db:migrate:remote": "wrangler d1 migrations apply bandon-cup --remote"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
   "dependencies": {
-    "framer-motion": "^12.40.0",
-    "hono": "^4.12.23",
+    "framer-motion": "^12.23.30",
+    "hono": "^4.10.7",
     "idb": "^8.0.3",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.39.0",
-    "@cloudflare/vitest-pool-workers": "^0.16.10",
-    "@cloudflare/workers-types": "^4.20260531.1",
-    "@types/react": "^19.2.15",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.2",
-    "jsdom": "^29.1.1",
-    "typescript": "^6.0.3",
-    "vite": "^8.0.14",
-    "vite-plugin-pwa": "^1.3.0",
+    "@cloudflare/vite-plugin": "^1.13.16",
+    "@cloudflare/vitest-pool-workers": "^0.9.16",
+    "@cloudflare/workers-types": "^4.20251122.0",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^5.1.0",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.13",
+    "vite-plugin-pwa": "^1.0.5",
     "vitest": "^3.2.4",
-    "wrangler": "^4.95.0"
+    "wrangler": "^4.51.0"
   }
 }
