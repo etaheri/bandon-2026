@@ -1,57 +1,198 @@
-import { useTrip } from "../state/useTrip";
+import { useEffect, useState } from "react";
 import { getPlayerId } from "../state/session";
-import { liveRound, nextUpcoming } from "../schedule";
 import { go } from "../App";
+import { homeCss } from "../ui/homeCss";
+import { TeeRow, SessionCard } from "../ui/TeeCard";
+import { usePlayers } from "../state/players";
+import {
+  TEAMS, SESSIONS,
+  type Session,
+  sessionStart, sessionCourses, phaseAt, countdown,
+} from "../data/broadcast";
+import { api } from "../api/client";
+
+// Inject the broadcast stylesheet exactly once.
+function useBroadcastCss() {
+  useEffect(() => {
+    if (document.getElementById("bc-home-css")) return;
+    const el = document.createElement("style");
+    el.id = "bc-home-css";
+    el.textContent = homeCss;
+    document.head.appendChild(el);
+  }, []);
+}
 
 export function Home() {
-  const { state } = useTrip();
+  useBroadcastCss();
   const me = getPlayerId();
-  if (!state) return <div style={{ padding: 24 }}>Loading…</div>;
-  const myName = me ? state.players.find((p: any) => p.id === me)?.name ?? me : null;
+  const players = usePlayers(); // names + handicaps from the API (DB is source of truth)
 
-  const rounds: any[] = state.rounds ?? [];
-  const courseName = (cid: string) => state.courses?.find((c: any) => c.id === cid)?.name ?? cid;
-  const myGroup = (roundId: string) => {
-    if (!me) return null;
-    const a = state.teeAssignments?.find((t: any) => t.round_id === roundId && t.player_id === me);
-    return a ? a.group_no : null;
-  };
+  const [decided, setDecided] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    api.leaderboard()
+      .then((lb: any) => setDecided(new Set((lb.roundCups ?? []).filter((rc: any) => rc.decided).map((rc: any) => rc.roundId))))
+      .catch(() => {});
+  }, []);
 
-  const now = new Date();
-  const live = liveRound(rounds as any, now);
-  const next = nextUpcoming(rounds as any, now);
+  // Re-render every 30s so the countdown ticks and live/next flips on its own.
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 30_000);
+    return () => clearInterval(t);
+  }, []);
 
-  const Card = ({ tag, r }: { tag: string; r: any }) => {
-    const grp = myGroup(r.id);
-    return (
-      <div className="panel" style={{ padding: 14 }}>
-        <div className="head" style={{ display: "flex", justifyContent: "space-between" }}>
-          <span>{tag}</span><span>{r.day} {r.teeTime}</span>
-        </div>
-        <div className="head" style={{ fontSize: 20, marginTop: 4 }}>{courseName(r.courseId)}</div>
-        {grp != null && <div style={{ opacity: .8, marginTop: 4 }}>You're in Group {grp}</div>}
-      </div>
-    );
-  };
+  const phase = phaseAt(now);
+  const featured: Session =
+    phase.kind === "LIVE" ? phase.live
+    : phase.kind === "PRE" ? phase.next
+    : SESSIONS[SESSIONS.length - 1]!;
+  const liveId = phase.kind === "LIVE" ? phase.live.id : null;
+
+  // Where "Enter Score" should land: the live counting round, else the next
+  // counting round, else the final counting round.
+  const counting = SESSIONS.filter((s) => s.roundId);
+  const scoreRound =
+    (phase.kind === "LIVE" && phase.live.roundId) ||
+    counting.find((s) => sessionStart(s).getTime() > now.getTime())?.roundId ||
+    counting[counting.length - 1]!.roundId!;
+
+  // If the live/next round is already FINAL (all scores in), point at the next
+  // counting round that still needs scores instead of nudging a finished one.
+  const scoreTarget = decided.has(scoreRound)
+    ? (counting.find((s) => s.roundId && !decided.has(s.roundId))?.roundId ?? scoreRound)
+    : scoreRound;
+
+  // Status pill.
+  let statusDot = "up";
+  let statusText: any = "";
+  if (phase.kind === "PRE") {
+    statusText = <>{phase.next.tag} TEES OFF IN <b>{countdown(sessionStart(phase.next).getTime(), now)}</b></>;
+  } else if (phase.kind === "LIVE") {
+    statusDot = "live";
+    statusText = <>LIVE NOW · <b>{phase.live.tag}</b></>;
+  } else {
+    statusText = <>FINAL · <b>IT'S IN THE BOOKS</b></>;
+  }
+
+  const featLabel = phase.kind === "LIVE" ? "On The Tee" : phase.kind === "PRE" ? "Up Next" : "Final Round";
+
+  // Ticker: every tee time of the week, rendered twice for a seamless loop.
+  const ticks = SESSIONS.flatMap((s) =>
+    s.groups.map((g) => ({
+      course: g.course, day: s.dayLabel, time: g.label,
+      mine: me ? g.seats.includes(me) : false,
+      live: s.id === liveId,
+    }))
+  );
+  const Tick = ({ t }: { t: typeof ticks[number] }) => (
+    <span className="bc-tick">
+      <span className="dot" />
+      <b>{t.course}</b> {t.day} · {t.time}
+      {t.live && <span className="live">● LIVE</span>}
+      {t.mine && <span style={{ color: "var(--gold)" }}>· YOU</span>}
+    </span>
+  );
 
   return (
-    <div style={{ padding: 20, display: "grid", gap: 16 }}>
-      <h1 className="head" style={{ textAlign: "center" }}>Bandon Cup '26</h1>
-      {myName ? (
-        <div className="panel" style={{ padding: 14, textAlign: "center" }}>Playing as <b>{myName}</b></div>
-      ) : (
-        <div className="panel" style={{ padding: 14, textAlign: "center", opacity: .85 }}>Spectating · tap Enter Score to log in</div>
-      )}
+    <div className="bc-stage">
+      {/* HERO */}
+      <header className="bc-hero bc-fade" style={{ animationDelay: "0ms" }}>
+        <div className="bc-hero-bg" />
+        <div className="bc-bug"><img src="/logo-puffin.png" alt="Bandon Dunes" /></div>
+        <div className="bc-hero-in">
+          <p className="bc-kicker">Bandon Dunes Resort · Oregon</p>
+          <h1 className="bc-title">Bandon Cup<small>— 2026 —</small></h1>
+          <div className="bc-sub">
+            <span className="g">Gorse</span><span className="x">vs</span><span className="d">Driftwood</span>
+            <span className="x">·</span><span>Jun 3–7</span>
+          </div>
+          <span className="bc-status">
+            <span className={"bc-dot " + statusDot} />
+            {statusText}
+          </span>
+        </div>
+      </header>
 
-      {live && <Card tag="● LIVE NOW" r={live} />}
-      {next && <Card tag="UP NEXT" r={next} />}
-      {!live && !next && <div className="panel" style={{ padding: 14, textAlign: "center" }}>Trip complete — see the final board.</div>}
+      {/* VERSUS */}
+      <div className="bc-h">The Matchup</div>
+      <div className="bc-vs bc-fade" style={{ animationDelay: "80ms" }}>
+        <div className="bc-team gorse">
+          <h3>{TEAMS.GORSE.name}</h3>
+          <ul>
+            {TEAMS.GORSE.roster.map((id) => (
+              <li key={id} className={id === me ? "me" : ""}>
+                {players[id]?.name ?? id}<span className="hc">{players[id]?.handicap}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="bc-vsbadge">VS</div>
+        <div className="bc-team drift">
+          <h3>{TEAMS.DRIFTWOOD.name}</h3>
+          <ul>
+            {TEAMS.DRIFTWOOD.roster.map((id) => (
+              <li key={id} className={id === me ? "me" : ""}>
+                {players[id]?.name ?? id}<span className="hc">{players[id]?.handicap}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
 
-      <button className="btn" onClick={() => go("/board")}>Leaderboard</button>
-      <button className="btn" onClick={() => go("/score?round=" + (live?.id ?? next?.id ?? "r2"))}>Enter Score</button>
-      <button className="btn" onClick={() => go("/tee")}>Tee Sheet</button>
+      {/* FEATURED — live or up next */}
+      <div className="bc-h">{featLabel}</div>
+      <section className="bc-feat bc-fade" style={{ animationDelay: "150ms" }}>
+        <div className="bc-feat-top">
+          <span className="c">{sessionCourses(featured)}</span>
+          <span className="day">{featured.dayLabel}</span>
+        </div>
+        <div className="bc-feat-grid">
+          {featured.groups.map((g, i) => <TeeRow key={i} g={g} me={me} players={players} />)}
+        </div>
+      </section>
 
-      <div style={{ textAlign: "center", opacity: .6, fontSize: 12 }}>BANDON SPORTS — IT'S IN THE GAME</div>
+      {/* FULL SCHEDULE RAIL — every tee time, scored or not */}
+      <div className="bc-h">Full Tee Sheet · Swipe →</div>
+      <div className="bc-rail bc-fade" style={{ animationDelay: "210ms" }}>
+        {SESSIONS.map((s) => <SessionCard key={s.id} s={s} me={me} liveId={liveId} players={players} />)}
+      </div>
+
+      {/* CTAs */}
+      <div className="bc-cta bc-fade" style={{ animationDelay: "270ms" }}>
+        <button className="bc-start" onClick={() => go("/score?round=" + scoreTarget)}>
+          <span className="arw">▸</span> Press Start — Enter Score
+        </button>
+        <div className="bc-row">
+          <button className="bc-ghost" onClick={() => go("/board")}>Leaderboard</button>
+          <button className="bc-ghost" onClick={() => go("/tee")}>Tee Sheet</button>
+        </div>
+        <div className="bc-row">
+          <button className="bc-ghost" onClick={() => go("/score?round=" + scoreTarget)}>Enter / Fix Another Round</button>
+          <button className="bc-ghost" onClick={() => go("/rules")}>How It Works</button>
+        </div>
+        {me ? (
+          <div className="bc-sub" style={{ justifyContent: "center", opacity: .85 }}>
+            Playing as <span className="g" style={{ marginLeft: 4 }}>{players[me]?.name ?? me}</span>
+          </div>
+        ) : (
+          <div className="bc-sub" style={{ justifyContent: "center", opacity: .7, fontSize: 13 }}>
+            Spectating · tap Press Start to log in &amp; score
+          </div>
+        )}
+      </div>
+
+      <div className="bc-foot">Bandon Sports — It's In The Game</div>
+
+      {/* TICKER */}
+      <div className="bc-ticker">
+        <div className="bc-ticker-lbl">Tee Times</div>
+        <div className="bc-ticker-win">
+          <div className="bc-ticker-track">
+            {ticks.map((t, i) => <Tick key={"a" + i} t={t} />)}
+            {ticks.map((t, i) => <Tick key={"b" + i} t={t} />)}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
