@@ -70,7 +70,7 @@ export function Book() {
             <span style={{ flex: 1, fontWeight: 700 }}>
               {s.name} {s.titles.map((t: string) => <span key={t} style={{ marginLeft: 4 }}>{t}</span>)}
             </span>
-            <span className="g" style={{ fontVariantNumeric: "tabular-nums" }}>
+            <span className="g" style={{ color: "var(--gold)", fontVariantNumeric: "tabular-nums" }}>
               {s.correct}<span style={{ opacity: .5 }}>/{s.resolvedPicked}</span>
             </span>
           </div>
