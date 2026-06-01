@@ -8,7 +8,7 @@ export const roundRoutes = new Hono<{
   Variables: { role: string };
 }>();
 
-roundRoutes.get("/round/:id", requireSession, async (c) => {
+roundRoutes.get("/round/:id", async (c) => {
   const id = c.req.param("id");
   if (!id) return c.json({ error: "no such round" }, 404);
   const [rounds, courses, scores] = await Promise.all([
@@ -33,7 +33,7 @@ roundRoutes.post("/score", requireSession, async (c) => {
   }>();
   if (!b.roundId || !b.playerId || typeof b.hole !== "number" || b.hole < 1 || b.hole > 18)
     return c.json({ error: "bad score" }, 400);
-  if (b.gross != null && (b.gross < 1 || b.gross > 20))
+  if (b.gross != null && (b.gross < 0 || b.gross > 20))
     return c.json({ error: "gross out of range" }, 400);
   const applied = await upsertScore(c.env.DB, b);
   return c.json({ ok: true, applied });

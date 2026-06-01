@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 import type { Env } from "../types";
-import { requireSession } from "../auth";
 import { computeLeaderboard } from "../../src/scoring";
 import {
   getPlayers,
@@ -15,7 +14,7 @@ export const leaderboardRoutes = new Hono<{
   Variables: { role: string };
 }>();
 
-leaderboardRoutes.get("/leaderboard", requireSession, async (c) => {
+leaderboardRoutes.get("/leaderboard", async (c) => {
   const [players, rounds, courses, scoresByRound, settings] = await Promise.all(
     [
       getPlayers(c.env.DB),
