@@ -1,13 +1,32 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useLeaderboard } from "../state/useLeaderboard";
+import { useTrip } from "../state/useTrip";
 import { go } from "../App";
 
 export function Board({ tv }: { tv: boolean }) {
   const lb = useLeaderboard(tv ? 15000 : 20000);
+  const { state } = useTrip();
   if (!lb) return <div style={{ padding: 24 }}>Loading board…</div>;
 
   const scale = tv ? 1.6 : 1;
   const leadGorse = lb.leader === "GORSE";
+
+  // No scores yet: leaderboard loaded but every player is "F" with a 0 result.
+  const players: any[] = Array.isArray(lb.players) ? lb.players : [];
+  const noScoresYet = players.length > 0 && players.every((p: any) => p.thru === "F" && p.result === 0);
+  if (noScoresYet) {
+    const firstRound = Array.isArray(state?.rounds) ? state.rounds.find((r: any) => r.counts) : undefined;
+    const teeTime: string | undefined = firstRound?.teeTime;
+    return (
+      <div style={{ minHeight: "100%", padding: tv ? 8 : 16 }}>
+        {!tv && <button className="btn" onClick={() => go("/")} style={{ marginBottom: 12 }}>‹ Home</button>}
+        <div className="head" style={{ display: "grid", placeItems: "center", minHeight: "60vh",
+          textAlign: "center", opacity: .85, fontSize: 18 * scale, padding: 24 }}>
+          {teeTime ? `No scores yet — first tee at ${teeTime}` : "No scores yet — check the tee sheet"}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: "100%", padding: tv ? 8 : 16 }}>

@@ -15,6 +15,7 @@ export function ScoreEntry() {
   const me = getPlayerId()!;
   const roundId = currentRoundId();
   const [data, setData] = useState<any>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [hole, setHole] = useState(1);
   const [scores, setScores] = useState<Record<number, number | null>>({});
 
@@ -22,12 +23,14 @@ export function ScoreEntry() {
   useEffect(() => {
     api.round(roundId).then(r => {
       setData(r);
+      setLoadFailed(false);
       const mine: Record<number, number | null> = {};
       for (const s of r.scores) if (s.player_id === me) mine[s.hole] = s.gross;
       setScores(mine);
-    });
+    }).catch(() => setLoadFailed(true));
   }, [roundId]);
 
+  if (!data && loadFailed) return <div style={{ padding: 24 }}>Offline — scores will save and sync when you're back online.</div>;
   if (!data) return <div style={{ padding: 24 }}>Loading…</div>;
   const h = data.holes.find((x: any) => x.number === hole);
 
