@@ -11,7 +11,7 @@ const players: Player[] = [
   { id: "d1", name: "D1", handicap: 0, quotaOverride: null, team: "DRIFTWOOD" },
 ];
 const rounds: Round[] = [
-  { id: "r2", courseId: "c", label: "R2", day: "THU", teeTime: "7:30", counts: true, doublePoints: false },
+  { id: "r2", courseId: "c", label: "R2", day: "THU", date: "2026-06-04", teeTime: "7:30", counts: true, doublePoints: false },
 ];
 
 describe("computeLeaderboard", () => {

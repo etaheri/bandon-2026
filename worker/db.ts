@@ -39,7 +39,7 @@ export async function getCourses(
 export async function getRounds(db: D1Database): Promise<Round[]> {
   const { results } = await db
     .prepare(
-      "SELECT id,course_id,label,day,tee_time,counts,double_points FROM rounds ORDER BY id",
+      "SELECT id,course_id,label,day,date,tee_time,counts,double_points FROM rounds ORDER BY id",
     )
     .all<any>();
   return results.map((r) => ({
@@ -47,6 +47,7 @@ export async function getRounds(db: D1Database): Promise<Round[]> {
     courseId: r.course_id,
     label: r.label,
     day: r.day,
+    date: r.date ?? "",
     teeTime: r.tee_time,
     counts: !!r.counts,
     doublePoints: !!r.double_points,
