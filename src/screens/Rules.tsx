@@ -82,10 +82,6 @@ export function Rules() {
         </ul>
         <p style={{ margin: 0, opacity: .7 }}>Find it on the home screen — tap <b>The Book 🎲</b>.</p>
       </Section>
-
-      <div className="bc-foot" style={{ textAlign: "center", opacity: .6, marginTop: 8 }}>
-        Bandon Sports — It's In The Game
-      </div>
     </div>
   );
 }
