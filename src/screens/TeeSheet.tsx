@@ -1,36 +1,36 @@
-import { useTrip } from "../state/useTrip";
-import { roundDetails } from "../teesheet";
-import { go } from "../App";
+import { getPlayerId } from "../state/session";
+import { BackButton } from "../ui/BackButton";
+import { SessionCard } from "../ui/TeeCard";
+import { usePlayers } from "../state/players";
+import { SESSIONS, phaseAt } from "../data/broadcast";
 
 export function TeeSheet() {
-  const { state } = useTrip();
-  if (!state) return <div style={{ padding: 24 }}>Loading…</div>;
-  const nameOf = (id: string) => state.players.find((p: any) => p.id === id)?.name ?? id;
-  const byRound = (rid: string, g: number) =>
-    state.teeAssignments.filter((t: any) => t.round_id === rid && t.group_no === g).map((t: any) => nameOf(t.player_id));
+  const me = getPlayerId();
+  const players = usePlayers(); // names from the API, schedule from SESSIONS
+  const phase = phaseAt(new Date());
+  const liveId = phase.kind === "LIVE" ? phase.live.id : null;
 
   return (
-    <div style={{ padding: 20, display: "grid", gap: 14 }}>
-      <div className="head" style={{ display: "flex", justifyContent: "space-between" }}>
-        <button className="btn" onClick={() => go("/")}>‹</button><span>Tee Sheet</span><span />
+    <div className="bc-page">
+      <div className="bc-topbar">
+        <BackButton />
+        <h1 className="bc-screen-title">Tee Sheet</h1>
+        <span className="sp" />
       </div>
-      {state.rounds.filter((r: any) => r.counts).map((r: any) => {
-        const d = roundDetails(r, state.courses);
-        return (
-          <div key={r.id} className="panel" style={{ padding: 14 }}>
-            <div className="head" style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-              <span>{d.title}</span>
-              <span style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                {d.dayDate} · {d.teeTime}{d.par != null ? ` · Par ${d.par}` : ""}{d.doublePoints ? " · 2×" : ""}
-              </span>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 8 }}>
-              <div><div style={{ opacity: .7 }}>Group 1</div>{byRound(r.id, 1).map((n: string) => <div key={n}>{n}</div>)}</div>
-              <div><div style={{ opacity: .7 }}>Group 2</div>{byRound(r.id, 2).map((n: string) => <div key={n}>{n}</div>)}</div>
-            </div>
+
+      <div className="bc-h">Full Week · Every Tee Time</div>
+      <div style={{ display: "grid", gap: 14 }}>
+        {SESSIONS.map((s, i) => (
+          <div key={s.id} className="bc-fade" style={{ animationDelay: `${i * 45}ms` }}>
+            <SessionCard s={s} me={me} liveId={liveId} players={players} />
           </div>
-        );
-      })}
+        ))}
+      </div>
+
+      <p style={{ marginTop: 16, textAlign: "center", opacity: .55, fontSize: 12,
+        fontFamily: '"Arial Narrow",Impact', letterSpacing: ".5px", textTransform: "uppercase" }}>
+        Six counting rounds · warm-up &amp; send-off for fun
+      </p>
     </div>
   );
 }

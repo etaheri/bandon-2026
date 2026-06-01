@@ -23,11 +23,11 @@ export function PlayerDetail({ playerId, lb, liveId, onClose }: { playerId: stri
   if (card) for (const s of card.scores) if (s.player_id === playerId) myScores[s.hole] = s.gross;
 
   return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.6)", display: "grid", placeItems: "center", padding: 16, zIndex: 50 }}>
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.72)", backdropFilter: "blur(2px)", display: "grid", placeItems: "center", padding: 16, zIndex: 70 }}>
       <div onClick={e => e.stopPropagation()} className="panel" style={{ padding: 16, width: "min(560px,100%)", maxHeight: "90vh", overflow: "auto", display: "grid", gap: 12 }}>
-        <div className="head" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span>{player.name}</span>
-          <button className="btn" onClick={onClose}>Close</button>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
+          <span className="chrome" style={{ fontSize: 26 }}>{player.name}</span>
+          <button className="btn ghost" style={{ padding: "8px 14px" }} onClick={onClose}>Close</button>
         </div>
         <div className="panel" style={{ padding: 10, display: "flex", justifyContent: "space-around", textAlign: "center" }}>
           <div><div style={{ opacity: .6, fontSize: 11 }}>HCP</div><div className="head">{player.handicap}</div></div>

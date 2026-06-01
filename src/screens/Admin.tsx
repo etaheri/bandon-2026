@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/client";
-import { go } from "../App";
+import { BackButton } from "../ui/BackButton";
 
 export function Admin() {
   const [state, setState] = useState<any>(null);
@@ -23,9 +23,11 @@ export function Admin() {
   }
 
   return (
-    <div style={{ padding: 20, display: "grid", gap: 14 }}>
-      <div className="head" style={{ display: "flex", justifyContent: "space-between" }}>
-        <button className="btn" onClick={() => go("/")}>‹</button><span>Admin</span><span />
+    <div className="bc-page" style={{ display: "grid", gap: 14 }}>
+      <div className="bc-topbar" style={{ marginBottom: 2 }}>
+        <BackButton />
+        <h1 className="bc-screen-title">Admin</h1>
+        <span className="sp" />
       </div>
       <label className="panel" style={{ padding: 12 }}>
         Handicap allowance:
