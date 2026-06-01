@@ -10,6 +10,7 @@ export const roundRoutes = new Hono<{
 
 roundRoutes.get("/round/:id", requireSession, async (c) => {
   const id = c.req.param("id");
+  if (!id) return c.json({ error: "no such round" }, 404);
   const [rounds, courses, scores] = await Promise.all([
     getRounds(c.env.DB),
     getCourses(c.env.DB),
@@ -17,7 +18,9 @@ roundRoutes.get("/round/:id", requireSession, async (c) => {
   ]);
   const round = rounds.find((r) => r.id === id);
   if (!round) return c.json({ error: "no such round" }, 404);
-  return c.json({ round, holes: courses[round.courseId].holes, scores });
+  const course = courses[round.courseId];
+  if (!course) return c.json({ error: "course not found" }, 500);
+  return c.json({ round, holes: course.holes, scores });
 });
 
 roundRoutes.post("/score", requireSession, async (c) => {
