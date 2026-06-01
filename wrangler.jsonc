@@ -1,0 +1,14 @@
+{
+  "name": "bandon-cup",
+  "main": "worker/index.ts",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": "./dist/client", "not_found_handling": "single-page-application" },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "bandon-cup", "database_id": "local-placeholder", "migrations_dir": "migrations" }
+  ],
+  "kv_namespaces": [
+    { "binding": "SESSIONS", "id": "local-placeholder" }
+  ],
+  "vars": { "PASSCODE": "bandon26", "ADMIN_PASSCODE": "commish26" }
+}

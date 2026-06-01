@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0b3d2e"/>
+  <rect x="28" y="28" width="456" height="456" rx="40" fill="none" stroke="#d9b24a" stroke-width="10" opacity="0.55"/>
+  <text x="50%" y="50%" dy="0.34em" text-anchor="middle"
+        font-family="Impact, 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif"
+        font-size="280" font-weight="900" font-style="italic"
+        fill="#d9b24a" letter-spacing="-8">BC</text>
+</svg>
