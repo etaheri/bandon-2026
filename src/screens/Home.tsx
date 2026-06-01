@@ -196,8 +196,6 @@ export function Home() {
         )}
       </div>
 
-      <div className="bc-foot">Bandon Sports — It's In The Game</div>
-
       {/* TICKER */}
       <div className="bc-ticker">
         <div className="bc-ticker-lbl">Tee Times</div>
