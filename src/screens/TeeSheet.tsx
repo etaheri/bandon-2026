@@ -1,4 +1,5 @@
 import { useTrip } from "../state/useTrip";
+import { roundDetails } from "../teesheet";
 import { go } from "../App";
 
 export function TeeSheet() {
@@ -13,17 +14,23 @@ export function TeeSheet() {
       <div className="head" style={{ display: "flex", justifyContent: "space-between" }}>
         <button className="btn" onClick={() => go("/")}>‹</button><span>Tee Sheet</span><span />
       </div>
-      {state.rounds.filter((r: any) => r.counts).map((r: any) => (
-        <div key={r.id} className="panel" style={{ padding: 14 }}>
-          <div className="head" style={{ display: "flex", justifyContent: "space-between" }}>
-            <span>{r.label}</span><span>{r.day} {r.teeTime}{r.doublePoints ? " · 2×" : ""}</span>
+      {state.rounds.filter((r: any) => r.counts).map((r: any) => {
+        const d = roundDetails(r, state.courses);
+        return (
+          <div key={r.id} className="panel" style={{ padding: 14 }}>
+            <div className="head" style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+              <span>{d.title}</span>
+              <span style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                {d.dayDate} · {d.teeTime}{d.par != null ? ` · Par ${d.par}` : ""}{d.doublePoints ? " · 2×" : ""}
+              </span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 8 }}>
+              <div><div style={{ opacity: .7 }}>Group 1</div>{byRound(r.id, 1).map((n: string) => <div key={n}>{n}</div>)}</div>
+              <div><div style={{ opacity: .7 }}>Group 2</div>{byRound(r.id, 2).map((n: string) => <div key={n}>{n}</div>)}</div>
+            </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 8 }}>
-            <div><div style={{ opacity: .7 }}>Group 1</div>{byRound(r.id, 1).map((n: string) => <div key={n}>{n}</div>)}</div>
-            <div><div style={{ opacity: .7 }}>Group 2</div>{byRound(r.id, 2).map((n: string) => <div key={n}>{n}</div>)}</div>
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
