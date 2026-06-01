@@ -31,7 +31,7 @@ roundRoutes.post("/score", requireSession, async (c) => {
     gross: number | null;
     updatedAt: number;
   }>();
-  if (!b.roundId || !b.playerId || b.hole < 1 || b.hole > 18)
+  if (!b.roundId || !b.playerId || typeof b.hole !== "number" || b.hole < 1 || b.hole > 18)
     return c.json({ error: "bad score" }, 400);
   if (b.gross != null && (b.gross < 1 || b.gross > 20))
     return c.json({ error: "gross out of range" }, 400);

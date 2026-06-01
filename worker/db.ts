@@ -121,6 +121,7 @@ export async function setHandicaps(
   db: D1Database,
   items: { id: string; handicap: number }[],
 ) {
+  if (items.length === 0) return; // db.batch([]) throws
   const stmt = db.prepare("UPDATE players SET handicap=? WHERE id=?");
   await db.batch(items.map((i) => stmt.bind(i.handicap, i.id)));
 }

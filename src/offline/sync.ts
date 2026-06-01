@@ -13,7 +13,11 @@ export async function flushQueue() {
   } finally { syncing = false; }
 }
 
+let autoSyncStarted = false;
+
 export function startAutoSync() {
+  if (autoSyncStarted) { flushQueue(); return; } // register listeners/interval only once
+  autoSyncStarted = true;
   window.addEventListener("online", flushQueue);
   setInterval(flushQueue, 15000);
   flushQueue();

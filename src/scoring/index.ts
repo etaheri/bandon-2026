@@ -35,7 +35,8 @@ export function computeLeaderboard(input: LeaderboardInput) {
       if (rr.holesPlayed > 0) anyPlayed = true;
       if (rr.thru !== "F") allDone = false;
       if (p.team === "GORSE") gorse += rr.result; else driftwood += rr.result;
-      dayResults.push({ playerId: p.id, day: round.day, result: rr.result });
+      // crowns consider only rounds actually started, so an unplayed 0 can't win a daily-low mid-trip
+      if (rr.holesPlayed > 0) dayResults.push({ playerId: p.id, day: round.day, result: rr.result });
       const agg = liveByPlayer.get(p.id) ?? { result: 0, thru: "F" as number | "F", played: 0 };
       agg.result += rr.result;
       agg.played += rr.holesPlayed;
