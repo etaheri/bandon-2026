@@ -18,7 +18,25 @@ export default defineConfig({
         theme_color: "#0b3d2e",
         background_color: "#0b3d2e",
         display: "standalone",
-        icons: [],
+        icons: [
+          { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+          { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
+          { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+        ],
+      },
+      workbox: {
+        navigateFallback: "/index.html",
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith("/api/"),
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "api",
+              networkTimeoutSeconds: 4,
+              expiration: { maxEntries: 50 },
+            },
+          },
+        ],
       },
     }),
   ],
