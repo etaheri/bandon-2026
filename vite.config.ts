@@ -1,6 +1,7 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { cloudflare } from "@cloudflare/vite-plugin";
+import { cloudflareTest } from "@cloudflare/vitest-pool-workers";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
@@ -21,12 +22,27 @@ export default defineConfig({
   ],
   test: {
     projects: [
-      { test: { name: "scoring", include: ["test/scoring/**/*.test.ts"], environment: "node" } },
       {
+        // Pure scoring/logic unit tests run in Node with no Cloudflare plugins.
+        test: {
+          name: "scoring",
+          include: ["test/scoring/**/*.test.ts"],
+          environment: "node",
+        },
+      },
+      {
+        // Worker integration tests run inside the workerd runtime via the
+        // Cloudflare vitest pool. In vitest-pool-workers v0.16 (Vitest 4), the
+        // pool is wired up via the `cloudflareTest()` plugin rather than the old
+        // `test.poolOptions.workers` shape.
+        plugins: [
+          cloudflareTest({
+            wrangler: { configPath: "./wrangler.jsonc" },
+          }),
+        ],
         test: {
           name: "worker",
           include: ["test/worker/**/*.test.ts"],
-          poolOptions: { workers: { wrangler: { configPath: "./wrangler.jsonc" } } },
         },
       },
     ],
