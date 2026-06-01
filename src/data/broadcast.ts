@@ -9,6 +9,8 @@
 // Group seats are stored as player ids and resolved through PLAYERS, so the
 // logged-in player's foursome can be highlighted across the whole schedule.
 
+import { pacificDate } from "../time";
+
 export type TeamId = "GORSE" | "DRIFTWOOD";
 
 export const PLAYERS: Record<string, { name: string; first: string; team: TeamId; hcp: number }> = {
@@ -114,11 +116,11 @@ export const SESSIONS: Session[] = [
   },
 ];
 
-/** Local Date for a group's tee time. */
+/** Absolute Date for a group's tee time, pinned to Pacific (see src/time.ts). */
 export function teeDate(date: string, time: string): Date {
   const [y, m, d] = date.split("-").map(Number);
   const [h, min] = time.split(":").map(Number);
-  return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1, h ?? 0, min ?? 0);
+  return pacificDate(y ?? 1970, m ?? 1, d ?? 1, h ?? 0, min ?? 0);
 }
 
 /** Earliest tee of a session. */

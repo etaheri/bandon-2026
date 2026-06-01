@@ -50,7 +50,7 @@ export function Board({ tv }: { tv: boolean }) {
         padding: "8px 10px", borderRadius: 8, background: live ? "linear-gradient(180deg,#1b3a31,#0c1c17)" : "transparent",
         boxShadow: live ? "var(--bevel)" : "none", opacity: live ? 1 : .7 }}>
         {live
-          ? `${liveFinal ? "■ FINAL" : "● LIVE"} · ROUND ${countIndex} OF ${roundsMeta.length} · ${(liveCourse?.name ?? "").toUpperCase()} · PAR ${liveCourse?.par ?? ""} · ${live.day} ${live.teeTime}`
+          ? `${liveFinal ? "■ FINAL" : "● LIVE"} · ROUND ${countIndex} OF ${roundsMeta.length} · ${(liveCourse?.name ?? "").toUpperCase()} · PAR ${liveCourse?.par ?? ""} · ${live.day} ${live.teeTime} PT`
           : `${lb.cup.available > 0 ? "UP NEXT — see tee sheet" : "ALL DECIDED"} · first to 4 wins, 3.5 retains`}
       </div>
 

@@ -1,8 +1,9 @@
 import type { Round } from "./scoring/types";
+import { pacificDate } from "./time";
 
 export type RoundStatus = "COMPLETED" | "LIVE" | "UPCOMING";
 
-/** Parse a round's `date` (YYYY-MM-DD) + `teeTime` ("7:30 AM") into a device-local Date. */
+/** Parse a round's `date` (YYYY-MM-DD) + `teeTime` ("7:30 AM") into an absolute Date pinned to Pacific (see src/time.ts). */
 export function roundStart(round: Round): Date {
   const [y, m, d] = round.date.split("-").map(Number);
   const match = round.teeTime.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
@@ -12,7 +13,7 @@ export function roundStart(round: Round): Date {
     min = Number(match[2]);
     if (/pm/i.test(match[3]!)) h += 12;
   }
-  return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1, h, min);
+  return pacificDate(y ?? 1970, m ?? 1, d ?? 1, h, min);
 }
 
 /** Counting rounds, sorted by start, each classified vs `now`. */

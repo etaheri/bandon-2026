@@ -149,10 +149,14 @@ export function Home() {
         <div className="bc-feat-grid">
           {featured.groups.map((g, i) => <TeeRow key={i} g={g} me={me} players={players} />)}
         </div>
+        <div className="head" style={{ textAlign: "center", marginTop: 8, opacity: .55,
+          fontSize: 11, letterSpacing: ".5px", textTransform: "uppercase" }}>
+          All tee times Pacific (PT)
+        </div>
       </section>
 
       {/* FULL SCHEDULE RAIL — every tee time, scored or not */}
-      <div className="bc-h">Full Tee Sheet · Swipe →</div>
+      <div className="bc-h">Full Tee Sheet · Pacific (PT) · Swipe →</div>
       <div className="bc-rail bc-fade" style={{ animationDelay: "210ms" }}>
         {SESSIONS.map((s) => <SessionCard key={s.id} s={s} me={me} liveId={liveId} players={players} />)}
       </div>

@@ -18,7 +18,7 @@ export function TeeSheet() {
         <span className="sp" />
       </div>
 
-      <div className="bc-h">Full Week · Every Tee Time</div>
+      <div className="bc-h">Full Week · Every Tee Time · Pacific (PT)</div>
       <div style={{ display: "grid", gap: 14 }}>
         {SESSIONS.map((s, i) => (
           <div key={s.id} className="bc-fade" style={{ animationDelay: `${i * 45}ms` }}>
