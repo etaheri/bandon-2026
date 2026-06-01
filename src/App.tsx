@@ -8,6 +8,7 @@ import { TeeSheet } from "./screens/TeeSheet";
 import { Board } from "./screens/Board";
 import { Admin } from "./screens/Admin";
 import { Rules } from "./screens/Rules";
+import { Book } from "./screens/Book";
 
 export function App() {
   const [, force] = useState(0);
@@ -22,6 +23,7 @@ export function App() {
   let screen: ReactNode;
   if (path.startsWith("/board")) screen = <Board tv={tv} />;
   else if (path.startsWith("/rules")) screen = <Rules />;
+  else if (path.startsWith("/book")) screen = <Book />;
   else if (path.startsWith("/tee")) screen = <TeeSheet />;
   else if (path.startsWith("/score") || path.startsWith("/admin")) {
     // Login required only to enter scores or admin.

@@ -174,6 +174,9 @@ export function Home() {
           <button className="bc-ghost" onClick={() => go("/score?round=" + scoreTarget)}>Enter / Fix Another Round</button>
           <button className="bc-ghost" onClick={() => go("/rules")}>How It Works</button>
         </div>
+        <div className="bc-row">
+          <button className="bc-ghost" onClick={() => go("/book")}>The Book 🎲</button>
+        </div>
         {me ? (
           <div className="bc-sub" style={{ justifyContent: "center", opacity: .85 }}>
             Playing as <span className="g" style={{ marginLeft: 4 }}>{players[me]?.name ?? me}</span>

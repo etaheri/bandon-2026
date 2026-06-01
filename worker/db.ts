@@ -146,3 +146,140 @@ export async function setQuotaOverride(
     .bind(quota, playerId)
     .run();
 }
+
+// --- The Bandon Book ---
+
+export interface PropRow {
+  id: string;
+  creator: string;
+  subject: string;
+  description: string | null;
+  status: string;
+  winning_option_id: string | null;
+  created_at: number;
+  locked_at: number | null;
+  resolved_at: number | null;
+}
+export interface OptionRow {
+  id: string;
+  prop_id: string;
+  label: string;
+  position: number;
+}
+export interface PickRow {
+  id: string;
+  prop_id: string;
+  option_id: string;
+  player_id: string;
+  created_at: number;
+}
+
+export async function getProps(db: D1Database): Promise<PropRow[]> {
+  const { results } = await db
+    .prepare(
+      "SELECT id,creator,subject,description,status,winning_option_id,created_at,locked_at,resolved_at FROM props ORDER BY created_at DESC",
+    )
+    .all<PropRow>();
+  return results;
+}
+
+export async function getPropOptions(db: D1Database): Promise<OptionRow[]> {
+  const { results } = await db
+    .prepare("SELECT id,prop_id,label,position FROM prop_options ORDER BY prop_id,position")
+    .all<OptionRow>();
+  return results;
+}
+
+export async function getPicks(db: D1Database): Promise<PickRow[]> {
+  const { results } = await db
+    .prepare("SELECT id,prop_id,option_id,player_id,created_at FROM picks")
+    .all<PickRow>();
+  return results;
+}
+
+export async function createProp(
+  db: D1Database,
+  p: {
+    id: string;
+    creator: string;
+    subject: string;
+    description: string | null;
+    createdAt: number;
+    options: { id: string; label: string; position: number }[];
+  },
+) {
+  await db.batch([
+    db
+      .prepare(
+        "INSERT INTO props (id,creator,subject,description,status,created_at) VALUES (?,?,?,?, 'open', ?)",
+      )
+      .bind(p.id, p.creator, p.subject, p.description, p.createdAt),
+    ...p.options.map((o) =>
+      db
+        .prepare("INSERT INTO prop_options (id,prop_id,label,position) VALUES (?,?,?,?)")
+        .bind(o.id, p.id, o.label, o.position),
+    ),
+  ]);
+}
+
+/** Insert a pick. Result tells the route which HTTP status to return. */
+export async function insertPick(
+  db: D1Database,
+  pick: { id: string; propId: string; optionId: string; playerId: string; createdAt: number },
+): Promise<"ok" | "closed" | "dup" | "badoption"> {
+  const prop = await db
+    .prepare("SELECT status FROM props WHERE id=?")
+    .bind(pick.propId)
+    .first<{ status: string }>();
+  if (!prop) return "badoption";
+  if (prop.status !== "open") return "closed";
+  const opt = await db
+    .prepare("SELECT id FROM prop_options WHERE id=? AND prop_id=?")
+    .bind(pick.optionId, pick.propId)
+    .first();
+  if (!opt) return "badoption";
+  try {
+    await db
+      .prepare("INSERT INTO picks (id,prop_id,option_id,player_id,created_at) VALUES (?,?,?,?,?)")
+      .bind(pick.id, pick.propId, pick.optionId, pick.playerId, pick.createdAt)
+      .run();
+    return "ok";
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    if (/UNIQUE/.test(msg)) return "dup"; // one pick per player per prop
+    throw e; // unexpected failure — don't mask as a duplicate
+  }
+}
+
+/** open -> locked. Returns false if the prop wasn't open. */
+export async function lockProp(db: D1Database, propId: string, lockedAt: number): Promise<boolean> {
+  const res = await db
+    .prepare("UPDATE props SET status='locked', locked_at=? WHERE id=? AND status='open'")
+    .bind(lockedAt, propId)
+    .run();
+  return (res.meta.changes ?? 0) > 0;
+}
+
+/** Set the winning option and mark resolved (allowed from open or locked). */
+export async function resolveProp(
+  db: D1Database,
+  propId: string,
+  winningOptionId: string,
+  resolvedAt: number,
+): Promise<"ok" | "notfound" | "badoption"> {
+  const opt = await db
+    .prepare("SELECT id FROM prop_options WHERE id=? AND prop_id=?")
+    .bind(winningOptionId, propId)
+    .first();
+  if (!opt) {
+    const prop = await db.prepare("SELECT id FROM props WHERE id=?").bind(propId).first();
+    return prop ? "badoption" : "notfound";
+  }
+  await db
+    .prepare(
+      "UPDATE props SET status='resolved', winning_option_id=?, resolved_at=? WHERE id=?",
+    )
+    .bind(winningOptionId, resolvedAt, propId)
+    .run();
+  return "ok";
+}
