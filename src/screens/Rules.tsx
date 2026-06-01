@@ -71,16 +71,16 @@ export function Rules() {
         </ul>
       </Section>
 
-      <Section title="The Bandon Book (Play-Money Sportsbook)">
-        <p style={{ margin: 0 }}>Side action for bragging rights — no real money. Everyone starts with <b>10,000 Gorse Gold</b>.</p>
+      <Section title="The Bandon Book (Prop Predictions)">
+        <p style={{ margin: 0 }}>Side action for bragging rights — no money, no odds. Just call it.</p>
         <ul style={{ margin: 0, paddingLeft: 18 }}>
-          <li>Anyone can post a <b>prop</b>: a subject and two or more outcomes, each with American odds.</li>
-          <li>Bet Gorse Gold on any open prop. Your stake is deducted when you place the bet.</li>
-          <li>Payout on a win: <b>profit = odds &gt; 0 ? stake × odds/100 : stake × 100/|odds|</b>. Lose and you forfeit the stake.</li>
-          <li>The creator locks the prop before the event, then settles it by picking the winner.</li>
-          <li>Titles: 🦈 The Shark (top balance) · 💸 The Degenerate (most bets) · 🔥 Biggest Single Win · 🚽 Tilted (bottom balance).</li>
+          <li>Anyone can post a <b>prop</b>: a subject (e.g. "Bruce's first tee shot") and two or more outcomes.</li>
+          <li>Everyone gets <b>one pick per prop</b>. Once you tap an outcome it's locked — no changing your mind.</li>
+          <li>The commish <b>locks</b> the prop before the event, then <b>resolves</b> it by picking the winner.</li>
+          <li>You score <b>+1 for every correct call</b>. The standings rank everyone by correct picks.</li>
+          <li>Titles: 🔮 The Oracle (most correct) · 🎯 Sharpshooter (best hit rate) · 🚽 Tank Job (most wrong).</li>
         </ul>
-        <p style={{ margin: 0, opacity: .7 }}>The Book launches as its own feature — these are the rules it runs on.</p>
+        <p style={{ margin: 0, opacity: .7 }}>Find it on the home screen — tap <b>The Book 🎲</b>.</p>
       </Section>
 
       <div className="bc-foot" style={{ textAlign: "center", opacity: .6, marginTop: 8 }}>
