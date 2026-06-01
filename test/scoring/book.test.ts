@@ -52,7 +52,7 @@ describe("computeStandings", () => {
     const b = s.find((x) => x.playerId === "b")!;
     expect(a.titles).toContain("🔮 The Oracle");
     expect(b.titles).toContain("🚽 Tank Job");
-    expect(s[0].playerId).toBe("a"); // sorted: most correct first
+    expect(s[0]!.playerId).toBe("a"); // sorted: most correct first
   });
 
   it("awards Sharpshooter on hit rate among players with >=3 resolved picks, excluding the Oracle", () => {
@@ -102,8 +102,8 @@ describe("computeStandings", () => {
     ];
     const s = computeStandings(props, picks, players);
     // Aaron and Beth both 1 correct / 100% hit rate; Aaron sorts first by name.
-    expect(s[0].name).toBe("Aaron");
-    expect(s[1].name).toBe("Beth");
+    expect(s[0]!.name).toBe("Aaron");
+    expect(s[1]!.name).toBe("Beth");
   });
 
   it("does not award Sharpshooter when the best eligible hit rate is 0%", () => {
