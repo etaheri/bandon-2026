@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { BackButton } from "../ui/BackButton";
+import { Login } from "./Login";
 import { useBook } from "../state/useBook";
 import { usePlayers } from "../state/players";
 import { getPlayerId, isAdmin } from "../state/session";
@@ -23,9 +24,14 @@ export function Book() {
   useBroadcastCss();
   const { data, refresh } = useBook();
   const players = usePlayers();
+  const [, force] = useState(0);
+  const [loggingIn, setLoggingIn] = useState(false);
   const me = getPlayerId();
   const admin = isAdmin();
   const [busy, setBusy] = useState(false);
+
+  // Let users log in right here instead of detouring through Home → Press Start.
+  if (loggingIn) return <Login onDone={() => { setLoggingIn(false); force((n) => n + 1); refresh(); }} />;
 
   const name = (id: string) => players[id]?.name ?? id;
 
@@ -61,6 +67,10 @@ export function Book() {
         Call it. Lock it in. Bragging rights only.
       </p>
 
+      {!me && (
+        <button className="btn" onClick={() => setLoggingIn(true)}>🔑 Log in to make picks</button>
+      )}
+
       <div className="panel" style={{ padding: 14, display: "grid", gap: 8 }}>
         <div style={{ fontWeight: 900, letterSpacing: 1, textTransform: "uppercase", opacity: .85 }}>Standings</div>
         {standings.length === 0 && <div style={{ opacity: .6 }}>No calls resolved yet.</div>}
@@ -77,22 +87,23 @@ export function Book() {
         ))}
       </div>
 
-      <PostProp me={me} onPosted={refresh} />
+      <PostProp me={me} onPosted={refresh} onLogin={() => setLoggingIn(true)} />
 
       {props.length === 0 && <div style={{ opacity: .6, textAlign: "center" }}>No props yet — post the first one.</div>}
       {props.map((p: any) => (
         <PropCard key={p.id} p={p} me={me} admin={admin} busy={busy}
-          name={name} onPick={pick} onLock={lock} onResolve={resolve} />
+          name={name} onPick={pick} onLock={lock} onResolve={resolve} onLogin={() => setLoggingIn(true)} />
       ))}
     </div>
   );
 }
 
-function PropCard({ p, me, admin, busy, name, onPick, onLock, onResolve }: {
+function PropCard({ p, me, admin, busy, name, onPick, onLock, onResolve, onLogin }: {
   p: any; me: string | null; admin: boolean; busy: boolean; name: (id: string) => string;
   onPick: (propId: string, optionId: string) => void;
   onLock: (propId: string) => void;
   onResolve: (propId: string, optionId: string) => void;
+  onLogin: () => void;
 }) {
   const closed = p.status !== "open";
   const resolved = p.status === "resolved";
@@ -110,13 +121,14 @@ function PropCard({ p, me, admin, busy, name, onPick, onLock, onResolve }: {
           const mine = p.myPick === o.id;
           const winner = resolved && p.winningOptionId === o.id;
           const canPick = !closed && !!me && !p.myPick && !busy;
+          const needsLogin = !closed && !me; // open prop, not logged in → tap to log in
           return (
             <button key={o.id} className="btn"
-              disabled={!canPick}
-              onClick={() => canPick && onPick(p.id, o.id)}
+              disabled={!canPick && !needsLogin}
+              onClick={() => needsLogin ? onLogin() : canPick && onPick(p.id, o.id)}
               style={{
                 display: "flex", justifyContent: "space-between", alignItems: "center",
-                opacity: canPick || mine || winner ? 1 : .6,
+                opacity: canPick || needsLogin || mine || winner ? 1 : .6,
                 borderColor: winner ? "var(--gold)" : mine ? "var(--gold)" : undefined,
                 boxShadow: winner ? "0 0 0 2px var(--gold) inset" : undefined,
               }}>
@@ -153,14 +165,14 @@ function PropCard({ p, me, admin, busy, name, onPick, onLock, onResolve }: {
   );
 }
 
-function PostProp({ me, onPosted }: { me: string | null; onPosted: () => void }) {
+function PostProp({ me, onPosted, onLogin }: { me: string | null; onPosted: () => void; onLogin: () => void }) {
   const [open, setOpen] = useState(false);
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
   const [options, setOptions] = useState<string[]>(["", ""]);
   const [busy, setBusy] = useState(false);
 
-  if (!me) return <div style={{ opacity: .6, textAlign: "center", fontSize: 13 }}>Log in (Press Start) to post props or make picks.</div>;
+  if (!me) return <button className="bc-ghost" onClick={onLogin}>Log in to post props or make picks</button>;
   if (!open) return <button className="bc-ghost" onClick={() => setOpen(true)}>+ Post a prop</button>;
 
   const setOpt = (i: number, v: string) => setOptions((a) => a.map((x, j) => (j === i ? v : x)));
