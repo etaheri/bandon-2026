@@ -10,5 +10,5 @@
     "skipLibCheck": true,
     "types": ["@cloudflare/workers-types", "vite/client"]
   },
-  "include": ["src", "worker", "test", "vite.config.ts"]
+  "include": ["src", "worker", "test", "vite.config.ts", "vitest.config.ts"]
 }
