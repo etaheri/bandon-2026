@@ -21,7 +21,7 @@ describe("roundResult", () => {
 
   it("prorates quota by holes played mid-round", () => {
     const scores: ScoreMap = {};
-    for (let n = 1; n <= 9; n++) scores[n] = holes[n - 1].strokeIndex <= 9 ? 5 : 4; // net par each
+    for (let n = 1; n <= 9; n++) scores[n] = (holes[n - 1]?.strokeIndex ?? n) <= 9 ? 5 : 4; // net par each
     const r = roundResult(player, holes, scores, { allowance: 0.75 });
     expect(r.holesPlayed).toBe(9);
     expect(r.points).toBe(18);
