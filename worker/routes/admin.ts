@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import type { Env } from "../types";
 import { requireAdmin } from "../auth";
-import { setHandicaps, setSetting, setQuotaOverride } from "../db";
+import { setHandicaps, setSetting, setQuotaOverride, setTeams } from "../db";
 
 export const adminRoutes = new Hono<{
   Bindings: Env;
@@ -13,6 +13,14 @@ adminRoutes.post("/admin/handicaps", requireAdmin, async (c) => {
     players: { id: string; handicap: number }[];
   }>();
   await setHandicaps(c.env.DB, players);
+  return c.json({ ok: true });
+});
+
+adminRoutes.post("/admin/teams", requireAdmin, async (c) => {
+  const { players } = await c.req.json<{
+    players: { id: string; team: "GORSE" | "DRIFTWOOD" }[];
+  }>();
+  await setTeams(c.env.DB, players);
   return c.json({ ok: true });
 });
 

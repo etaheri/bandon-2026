@@ -8,12 +8,17 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/client";
 import { PLAYERS as STATIC } from "../data/broadcast";
+import { playingHandicap } from "../scoring/strokes";
 
 export type TeamId = "GORSE" | "DRIFTWOOD";
-export interface PlayerInfo { name: string; handicap: number; team: TeamId; }
+/** `handicap` is the course handicap index; `playing` is the strokes actually
+ *  received this trip (index × allowance, rounded) — i.e. the pops on a card. */
+export interface PlayerInfo { name: string; handicap: number; playing: number; team: TeamId; }
+
+const DEFAULT_ALLOWANCE = 0.75;
 
 const fallback: Record<string, PlayerInfo> = Object.fromEntries(
-  Object.entries(STATIC).map(([id, p]) => [id, { name: p.name, handicap: p.hcp, team: p.team }]),
+  Object.entries(STATIC).map(([id, p]) => [id, { name: p.name, handicap: p.hcp, playing: playingHandicap(p.hcp, DEFAULT_ALLOWANCE), team: p.team }]),
 );
 
 let cache: Record<string, PlayerInfo> | null = null;
@@ -24,8 +29,9 @@ function load(): Promise<Record<string, PlayerInfo>> {
   if (!inflight) {
     inflight = api.state()
       .then((s: any) => {
+        const allowance = Number(s.settings?.allowance) || DEFAULT_ALLOWANCE;
         const dir: Record<string, PlayerInfo> = {};
-        for (const p of s.players) dir[p.id] = { name: p.name, handicap: p.handicap, team: p.team };
+        for (const p of s.players) dir[p.id] = { name: p.name, handicap: p.handicap, playing: playingHandicap(p.handicap, allowance), team: p.team };
         cache = dir;
         return dir;
       })

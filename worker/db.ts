@@ -127,6 +127,15 @@ export async function setHandicaps(
   await db.batch(items.map((i) => stmt.bind(i.handicap, i.id)));
 }
 
+export async function setTeams(
+  db: D1Database,
+  items: { id: string; team: "GORSE" | "DRIFTWOOD" }[],
+) {
+  if (items.length === 0) return; // db.batch([]) throws
+  const stmt = db.prepare("UPDATE players SET team=? WHERE id=?");
+  await db.batch(items.map((i) => stmt.bind(i.team, i.id)));
+}
+
 export async function setSetting(db: D1Database, key: string, value: string) {
   await db
     .prepare(

@@ -18,6 +18,12 @@ export function Seat({ id, me, players }: { id: string; me: string | null; playe
     <span className={"bc-seat" + (mine ? " me" : "")}>
       <span className="pip" style={{ background: teamColor(p?.team ?? "GORSE") }} />
       <span className="nm">{p?.name ?? id}</span>
+      {p && (
+        <span title={`Playing handicap — ${p.playing} stroke${p.playing === 1 ? "" : "s"} this round`}
+          style={{ marginLeft: 5, fontSize: 11, fontWeight: 800, color: "var(--gold)", opacity: .9, whiteSpace: "nowrap" }}>
+          ({p.playing})
+        </span>
+      )}
     </span>
   );
 }

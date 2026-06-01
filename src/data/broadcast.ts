@@ -14,19 +14,19 @@ import { pacificDate } from "../time";
 export type TeamId = "GORSE" | "DRIFTWOOD";
 
 export const PLAYERS: Record<string, { name: string; first: string; team: TeamId; hcp: number }> = {
-  taheri:   { name: "Erik Taheri",     first: "Erik",    team: "GORSE",     hcp: 12 },
-  desabio:  { name: "Pete DeSabio",    first: "Pete",    team: "GORSE",     hcp: 9 },
-  laflair:  { name: "Matt LaFlair",    first: "Matt",    team: "GORSE",     hcp: 16 },
-  stenzel:  { name: "Bruce Stenzel",   first: "Bruce",   team: "GORSE",     hcp: 7 },
-  meissner: { name: "Ryan Meissner",   first: "Ryan",    team: "DRIFTWOOD", hcp: 14 },
-  grattan:  { name: "Jeff Grattan",    first: "Jeff",    team: "DRIFTWOOD", hcp: 11 },
-  sloan:    { name: "Gavin Sloan",     first: "Gavin",   team: "DRIFTWOOD", hcp: 18 },
+  taheri:   { name: "Erik Taheri",     first: "Erik",    team: "DRIFTWOOD", hcp: 4.6 },
+  desabio:  { name: "Pete DeSabio",    first: "Pete",    team: "GORSE",     hcp: 8.6 },
+  laflair:  { name: "Matt LaFlair",    first: "Matt",    team: "GORSE",     hcp: 8.6 },
+  stenzel:  { name: "Bruce Stenzel",   first: "Bruce",   team: "GORSE",     hcp: 14 },
+  meissner: { name: "Ryan Meissner",   first: "Ryan",    team: "GORSE",     hcp: 14 },
+  grattan:  { name: "Jeff Grattan",    first: "Jeff",    team: "DRIFTWOOD", hcp: 15 },
+  sloan:    { name: "Gavin Sloan",     first: "Gavin",   team: "DRIFTWOOD", hcp: 14.6 },
   johnson:  { name: "Anthony Johnson", first: "Anthony", team: "DRIFTWOOD", hcp: 10 },
 };
 
 export const TEAMS: Record<TeamId, { name: string; color: string; roster: string[] }> = {
-  GORSE:     { name: "Gorse",     color: "#F4A300", roster: ["taheri", "desabio", "laflair", "stenzel"] },
-  DRIFTWOOD: { name: "Driftwood", color: "#2E8BFF", roster: ["meissner", "grattan", "sloan", "johnson"] },
+  GORSE:     { name: "Gorse",     color: "#F4A300", roster: ["desabio", "laflair", "stenzel", "meissner"] },
+  DRIFTWOOD: { name: "Driftwood", color: "#2E8BFF", roster: ["taheri", "grattan", "sloan", "johnson"] },
 };
 
 export interface TeeGroup {

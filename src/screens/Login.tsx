@@ -6,6 +6,12 @@ export function Login({ onDone }: { onDone: () => void }) {
   const [passcode, setPasscode] = useState("");
   const [players, setPlayers] = useState<any[] | null>(null);
   const [err, setErr] = useState("");
+  // Set by the API layer when a request 401s (session expired mid-use).
+  const [expired] = useState(() => {
+    const e = sessionStorage.getItem("bandon_expired") === "1";
+    sessionStorage.removeItem("bandon_expired");
+    return e;
+  });
 
   async function submit() {
     try {
@@ -40,6 +46,9 @@ export function Login({ onDone }: { onDone: () => void }) {
         Bandon Dunes Resort · Oregon
       </p>
       <h1 className="bc-screen-title" style={{ textAlign: "center", fontSize: "clamp(40px,13vw,68px)" }}>Bandon Cup '26</h1>
+      {expired && <div style={{ textAlign: "center", color: "var(--gold)", fontSize: 14 }}>
+        Signed out — re-enter the passcode to keep scoring. Your entered scores are saved and will sync.
+      </div>}
       <input value={passcode} onChange={e => setPasscode(e.target.value)} placeholder="Trip passcode" inputMode="text"
         style={{ padding: 16, fontSize: 18, textAlign: "center" }} onKeyDown={e => { if (e.key === "Enter") submit(); }} />
       <button className="btn" onClick={submit}>Enter</button>

@@ -1,19 +1,22 @@
 -- Seed data for Bandon Cup '26.
--- Players' team split and handicaps are admin-editable placeholders (balanced split).
+-- Handicaps are admin-editable indexes; teams are the auto-balanced split
+-- produced by balanceTeams() (src/scoring/teams.ts) — playing-handicap totals
+-- of 34 (GORSE) vs 33 (DRIFTWOOD) at the 0.75 allowance, with the two lowest
+-- indexes (Taheri 4.6, DeSabio/LaFlair 8.6) on opposite teams.
 -- Hole par + stroke_index sourced from docs/scorecards.md (all 5 courses verified;
 -- every course has stroke_index values 1..18 each appearing exactly once).
 
 INSERT INTO settings (key, value) VALUES ('allowance', '0.75'), ('handicaps_locked', '0');
 
 INSERT INTO players (id, name, handicap, team) VALUES
- ('taheri','Taheri',12,'GORSE'),
- ('desabio','DeSabio',9,'GORSE'),
- ('laflair','LaFlair',16,'GORSE'),
- ('stenzel','Stenzel',7,'GORSE'),
- ('meissner','Meissner',14,'DRIFTWOOD'),
- ('grattan','Grattan',11,'DRIFTWOOD'),
- ('sloan','Sloan',18,'DRIFTWOOD'),
- ('johnson','Johnson',10,'DRIFTWOOD');
+ ('taheri','Erik Taheri',4.6,'DRIFTWOOD'),
+ ('desabio','Pete DeSabio',8.6,'GORSE'),
+ ('laflair','Matt LaFlair',8.6,'GORSE'),
+ ('stenzel','Bruce Stenzel',14,'GORSE'),
+ ('meissner','Ryan Meissner',14,'GORSE'),
+ ('grattan','Jeff Grattan',15,'DRIFTWOOD'),
+ ('sloan','Gavin Sloan',14.6,'DRIFTWOOD'),
+ ('johnson','Anthony Johnson',10,'DRIFTWOOD');
 
 INSERT INTO courses (id, name, par) VALUES
  ('pacific','Pacific Dunes',71),

@@ -3,7 +3,7 @@ import { getPlayerId } from "../state/session";
 import { go } from "../App";
 import { homeCss } from "../ui/homeCss";
 import { TeeRow, SessionCard } from "../ui/TeeCard";
-import { usePlayers } from "../state/players";
+import { usePlayers, type TeamId } from "../state/players";
 import {
   TEAMS, SESSIONS,
   type Session,
@@ -26,6 +26,14 @@ export function Home() {
   useBroadcastCss();
   const me = getPlayerId();
   const players = usePlayers(); // names + handicaps from the API (DB is source of truth)
+
+  // Team rosters come from the DB too (not the static broadcast roster), so an
+  // admin re-balance is reflected here, not just on the leaderboard.
+  const teamRoster = (team: TeamId) =>
+    Object.entries(players)
+      .filter(([, p]) => p.team === team)
+      .sort((a, b) => a[1].handicap - b[1].handicap)
+      .map(([id]) => id);
 
   const [decided, setDecided] = useState<Set<string>>(new Set());
   useEffect(() => {
@@ -119,7 +127,7 @@ export function Home() {
         <div className="bc-team gorse">
           <h3>{TEAMS.GORSE.name}</h3>
           <ul>
-            {TEAMS.GORSE.roster.map((id) => (
+            {teamRoster("GORSE").map((id) => (
               <li key={id} className={id === me ? "me" : ""}>
                 {players[id]?.name ?? id}<span className="hc">{players[id]?.handicap}</span>
               </li>
@@ -130,7 +138,7 @@ export function Home() {
         <div className="bc-team drift">
           <h3>{TEAMS.DRIFTWOOD.name}</h3>
           <ul>
-            {TEAMS.DRIFTWOOD.roster.map((id) => (
+            {teamRoster("DRIFTWOOD").map((id) => (
               <li key={id} className={id === me ? "me" : ""}>
                 {players[id]?.name ?? id}<span className="hc">{players[id]?.handicap}</span>
               </li>
