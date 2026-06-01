@@ -14,7 +14,7 @@
 
 **Create:**
 - `migrations/0005_bandon_book.sql` — drop + recreate `props`/`prop_options`, drop `wagers`, create `picks`.
-- `src/book.ts` — pure `computeStandings()` + types. No DB, no React.
+- `src/scoring/book.ts` — pure `computeStandings()` + types. No DB, no React. (Lives under `src/scoring/` with the other pure-logic modules.)
 - `worker/routes/book.ts` — Hono routes: `GET /book`, `POST /book/prop|pick|lock|resolve`.
 - `src/state/useBook.ts` — polling hook (analogous to `useLeaderboard`).
 - `src/screens/Book.tsx` — the `/book` screen.
@@ -636,7 +636,7 @@ Create `worker/routes/book.ts`:
 import { Hono } from "hono";
 import type { Env } from "../types";
 import { requireSession, requireAdmin } from "../auth";
-import { computeStandings } from "../../src/book";
+import { computeStandings } from "../../src/scoring/book";
 import {
   getPlayers, getProps, getPropOptions, getPicks,
   createProp, insertPick, lockProp, resolveProp,
