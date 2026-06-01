@@ -27,4 +27,22 @@ describe("computeLeaderboard", () => {
     expect(lb.players.find(p => p.playerId === "d1")!.thru).toBe(1);
     expect(["GORSE","DRIFTWOOD"]).toContain(lb.leader);
   });
+
+  it("exposes per-player per-round results, roundCups, and metadata", () => {
+    const scoresByRound = { r2: { g1: Object.fromEntries(holes.map(h => [h.number, 4])), d1: { 1: 5 } } };
+    const lb = computeLeaderboard({ players, rounds, courses, scoresByRound, allowance: 1 });
+
+    const g1 = lb.players.find(p => p.playerId === "g1")!;
+    expect(g1.perRound.r2).toBeDefined();
+    expect(g1.perRound.r2!.thru).toBe("F");
+    const d1 = lb.players.find(p => p.playerId === "d1")!;
+    expect(d1.perRound.r2!.thru).toBe(1);
+
+    expect(lb.roundCups.length).toBe(1);
+    expect(lb.roundCups[0]!.roundId).toBe("r2");
+
+    expect(lb.rounds.find(r => r.id === "r2")).toBeDefined();
+    expect(lb.courses.find(c => c.id === "c")).toBeDefined();
+    expect(typeof lb.allowance).toBe("number");
+  });
 });
