@@ -31,6 +31,14 @@ export default defineConfig({
         },
       },
       {
+        // Pure state/hook unit tests run in plain Node.
+        test: {
+          name: "state",
+          include: ["test/state/**/*.test.ts"],
+          environment: "node",
+        },
+      },
+      {
         // Worker integration tests run inside the workerd runtime via the
         // Cloudflare vitest pool. In vitest-pool-workers v0.16 (Vitest 4) the
         // pool is wired up via the `cloudflareTest()` plugin, which reads
