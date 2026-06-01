@@ -61,14 +61,18 @@ bookRoutes.post("/book/prop", requireSession, async (c) => {
   const b = await c.req.json<{ creator?: string; subject?: string; description?: string; options?: string[] }>();
   const subject = b.subject?.trim();
   const creator = b.creator?.trim();
+  const description = b.description?.trim() || null;
   const labels = (b.options ?? []).map((o) => o?.trim()).filter((o): o is string => !!o);
   if (!creator) return c.json({ error: "creator required" }, 400);
   if (!subject) return c.json({ error: "subject required" }, 400);
   if (labels.length < 2 || labels.length > 8) return c.json({ error: "need 2-8 options" }, 400);
+  if (subject.length > 200) return c.json({ error: "subject too long" }, 400);
+  if (description && description.length > 500) return c.json({ error: "description too long" }, 400);
+  if (labels.some((l) => l.length > 80)) return c.json({ error: "option too long" }, 400);
   const id = crypto.randomUUID();
   await createProp(c.env.DB, {
     id, creator, subject,
-    description: b.description?.trim() || null,
+    description,
     createdAt: Date.now(),
     options: labels.map((label, i) => ({ id: crypto.randomUUID(), label, position: i })),
   });

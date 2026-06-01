@@ -34,6 +34,7 @@ async function createOpenProp(cookie: string, subject: string) {
     "https://x/api/book/prop",
     json(cookie, { creator: "taheri", subject, options: ["Yes", "No"] }),
   );
+  expect(res.status).toBe(200);
   const { id } = await res.json<{ id: string }>();
   const get = await (await SELF.fetch("https://x/api/book")).json<any>();
   const prop = get.props.find((p: any) => p.id === id);
@@ -73,7 +74,10 @@ describe("book routes", () => {
     );
     expect(res.status).toBe(200);
     const data = await (await SELF.fetch(`https://x/api/book?me=desabio`)).json<any>();
-    expect(data.props.find((p: any) => p.id === id).myPick).toBe(optionIds[0]);
+    const prop = data.props.find((p: any) => p.id === id);
+    expect(prop.myPick).toBe(optionIds[0]);
+    expect(prop.options.find((o: any) => o.id === optionIds[0]).pickCount).toBe(1);
+    expect(prop.picks).toContainEqual({ playerId: "desabio", optionId: optionIds[0] });
   });
 
   it("409s on a duplicate pick by the same player", async () => {
@@ -121,5 +125,31 @@ describe("book routes", () => {
     const { id, optionIds } = await createOpenProp(player, "resolve auth");
     const res = await SELF.fetch("https://x/api/book/resolve", json(player, { propId: id, winningOptionId: optionIds[0] }));
     expect(res.status).toBe(403);
+  });
+
+  it("resolve is correctable (re-resolve changes the winner)", async () => {
+    const player = await authCookie();
+    const admin = await adminCookie();
+    const { id, optionIds } = await createOpenProp(player, "re-resolve test");
+    await SELF.fetch("https://x/api/book/pick", json(player, { propId: id, optionId: optionIds[0], playerId: "meissner" }));
+
+    const first = await SELF.fetch("https://x/api/book/resolve", json(admin, { propId: id, winningOptionId: optionIds[0] }));
+    expect(first.status).toBe(200);
+    let data = await (await SELF.fetch("https://x/api/book")).json<any>();
+    expect(data.standings.find((s: any) => s.playerId === "meissner").correct).toBeGreaterThanOrEqual(1);
+
+    // The commish can re-resolve to fix a mis-settlement — intentional, no guard.
+    const second = await SELF.fetch("https://x/api/book/resolve", json(admin, { propId: id, winningOptionId: optionIds[1] }));
+    expect(second.status).toBe(200);
+    data = await (await SELF.fetch("https://x/api/book")).json<any>();
+    expect(data.props.find((p: any) => p.id === id).winningOptionId).toBe(optionIds[1]);
+    // meissner picked option[0], which is no longer the winner, so 0 correct now.
+    expect(data.standings.find((s: any) => s.playerId === "meissner").correct).toBe(0);
+  });
+
+  it("resolve on a nonexistent prop returns 404", async () => {
+    const admin = await adminCookie();
+    const res = await SELF.fetch("https://x/api/book/resolve", json(admin, { propId: "does-not-exist", winningOptionId: "x" }));
+    expect(res.status).toBe(404);
   });
 });
