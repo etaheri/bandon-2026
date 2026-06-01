@@ -13,4 +13,13 @@ export const api = {
   leaderboard: () => req<any>("/leaderboard"),
   adminHandicaps: (players: { id: string; handicap: number }[]) => req("/admin/handicaps", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ players }) }),
   adminSettings: (b: any) => req("/admin/settings", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(b) }),
+  book: (me: string | null) => req<any>(`/book${me ? `?me=${encodeURIComponent(me)}` : ""}`),
+  bookProp: (b: { creator: string; subject: string; description?: string; options: string[] }) =>
+    req<{ ok: boolean; id: string }>("/book/prop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(b) }),
+  bookPick: (b: { propId: string; optionId: string; playerId: string }) =>
+    req<{ ok: boolean }>("/book/pick", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(b) }),
+  bookLock: (propId: string) =>
+    req<{ ok: boolean }>("/book/lock", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ propId }) }),
+  bookResolve: (b: { propId: string; winningOptionId: string }) =>
+    req<{ ok: boolean }>("/book/resolve", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(b) }),
 };

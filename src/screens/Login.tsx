@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { api } from "../api/client";
-import { setAuthed, setPlayerId } from "../state/session";
+import { setAuthed, setPlayerId, setRole } from "../state/session";
 
 export function Login({ onDone }: { onDone: () => void }) {
   const [passcode, setPasscode] = useState("");
@@ -9,8 +9,9 @@ export function Login({ onDone }: { onDone: () => void }) {
 
   async function submit() {
     try {
-      await api.auth(passcode);
+      const { role } = await api.auth(passcode);
       setAuthed(true);
+      setRole(role);
       const st = await api.state();
       setPlayers(st.players);
     } catch (e: any) { setErr(e.message); }
