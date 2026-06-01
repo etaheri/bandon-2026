@@ -1,3 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
-createRoot(document.getElementById("root")!).render(<App />);
+const root = createRoot(document.getElementById("root")!);
+const render = () => root.render(<App />);
+window.addEventListener("popstate", render);
+render();
