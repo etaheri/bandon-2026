@@ -18,23 +18,25 @@ export function tallyCup(rounds: RoundCup[]): { gorse: number; driftwood: number
   return { gorse, driftwood, available };
 }
 
-export type ClinchLabel = "CLINCHED" | "RETAINS" | "ALIVE" | "MUST WIN FINALE" | "ELIMINATED";
+export type ClinchLabel = "CLINCHED" | "PUTT-OFF" | "ALIVE" | "MUST WIN FINALE" | "ELIMINATED";
 
-/** TOTAL_POINTS = 7, WIN = 4, RETAIN = 3.5. */
+/**
+ * TOTAL_POINTS = 7, WIN = 4. This is the first Cup, so there is no defending
+ * holder — a team wins outright only by reaching 4. The lone tie (3.5–3.5) is
+ * broken by a sudden-death putting contest, surfaced as the PUTT-OFF label.
+ */
 export function clinchState(gorse: number, driftwood: number, available: number): { gorse: ClinchLabel; driftwood: ClinchLabel } {
-  const WIN = 4, RETAIN = 3.5;
-  const label = (me: number, them: number, isHolder: boolean): ClinchLabel => {
+  const WIN = 4, TIE = 3.5;
+  const label = (me: number, them: number): ClinchLabel => {
     const themMax = them + available;
     const myMax = me + available;
-    if (me >= WIN) return "CLINCHED";
-    if (me > themMax) return "CLINCHED";            // opponent can't reach me
-    if (isHolder && me >= RETAIN && me >= themMax) return "RETAINS"; // best opp can do is tie
-    if (myMax < RETAIN && !isHolder) return "ELIMINATED";
-    if (myMax < WIN && isHolder && themMax > RETAIN) return "ELIMINATED";
+    if (me >= WIN || me > themMax) return "CLINCHED";        // outright win secured
+    if (them >= WIN || them > myMax) return "ELIMINATED";    // opponent secured the win
+    if (myMax < TIE) return "ELIMINATED";                    // can't even force a tie
+    if (me >= TIE && themMax <= me) return "PUTT-OFF";       // worst case is a 3.5–3.5 putt-off
     // still mathematically alive; if a single finale (available===2) decides it, surface MUST WIN
     if (available === 2 && me < them) return "MUST WIN FINALE";
     return "ALIVE";
   };
-  // Gorse is the defending holder in '26 (defaults; flip if needed via seed later).
-  return { gorse: label(gorse, driftwood, true), driftwood: label(driftwood, gorse, false) };
+  return { gorse: label(gorse, driftwood), driftwood: label(driftwood, gorse) };
 }

@@ -45,4 +45,4 @@ export function App() {
   );
 }
 
-export const go = (p: string) => { window.history.pushState({}, "", p); window.dispatchEvent(new PopStateEvent("popstate")); };
+export const go = (p: string) => { window.history.pushState({}, "", p); window.scrollTo(0, 0); window.dispatchEvent(new PopStateEvent("popstate")); };

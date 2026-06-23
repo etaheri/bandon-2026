@@ -4,6 +4,7 @@ import { useLeaderboard } from "../state/useLeaderboard";
 import type { PollStatus } from "../state/pollStatus";
 import { useFlashOnChange } from "../ui/useFlashOnChange";
 import { liveRound } from "../schedule";
+import { TEAMS, type TeamId } from "../data/broadcast";
 import { BackButton } from "../ui/BackButton";
 import { PlayerDetail } from "./PlayerDetail";
 
@@ -51,7 +52,7 @@ export function Board({ tv }: { tv: boolean }) {
         boxShadow: live ? "var(--bevel)" : "none", opacity: live ? 1 : .7 }}>
         {live
           ? `${liveFinal ? "■ FINAL" : "● LIVE"} · ROUND ${countIndex} OF ${roundsMeta.length} · ${(liveCourse?.name ?? "").toUpperCase()} · PAR ${liveCourse?.par ?? ""} · ${live.day} ${live.teeTime} PT`
-          : `${lb.cup.available > 0 ? "UP NEXT — see tee sheet" : "ALL DECIDED"} · first to 4 wins, 3.5 retains`}
+          : `${lb.cup.available > 0 ? "UP NEXT — see tee sheet" : "ALL DECIDED"} · first to 4 wins · 3.5–3.5 = sudden-death putt-off`}
       </div>
 
       <RoundStrip roundCups={lb.roundCups ?? []} roundsMeta={roundsMeta} scale={scale} />
@@ -76,7 +77,7 @@ function TeamBar({ team, cup, agg, clinch, lead, flip, scale, right }: any) {
     <div className={flip ? "bc-pulse" : undefined} style={{ padding: 16, textAlign: right ? "right" : "left",
       background: lead ? color : `linear-gradient(${right ? "270deg" : "90deg"}, ${color}33, #0a1714)`,
       color: lead ? "#10231c" : "#fff" }}>
-      <div className="head" style={{ fontSize: 20 * scale, color: lead ? "#10231c" : color }}>{team}</div>
+      <div className="head" style={{ fontSize: 20 * scale, color: lead ? "#10231c" : color }}>{TEAMS[team as TeamId].name}</div>
       <div className={"head" + (cupFlash ? " bc-flash" : "")} style={{ fontSize: 56 * scale, lineHeight: 1, display: "inline-block" }}>{cup}</div>
       <div style={{ opacity: .9, fontSize: 13 * scale }}>{agg >= 0 ? "+" : ""}{agg} to quota</div>
       <div className={"head" + (clinchFlash && clinch === "CLINCHED" ? " bc-flash" : "")} style={{ marginTop: 4, fontSize: 11 * scale, display: "inline-block" }}>{clinch}</div>

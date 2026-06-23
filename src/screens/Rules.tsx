@@ -1,4 +1,5 @@
 import { BackButton } from "../ui/BackButton";
+import { TEAMS } from "../data/broadcast";
 
 function Section({ title, children }: { title: string; children: any }) {
   return (
@@ -22,8 +23,8 @@ export function Rules() {
 
       <Section title="The Format">
         <p style={{ margin: 0 }}>
-          Eight players, two teams — <b style={{ color: "var(--gorse)" }}>Gorse</b> vs{" "}
-          <b style={{ color: "var(--driftwood)" }}>Driftwood</b> — over six counting rounds (Thu–Sat) at Bandon Dunes.
+          Eight players, two teams — <b style={{ color: "var(--gorse)" }}>{TEAMS.GORSE.name}</b> vs{" "}
+          <b style={{ color: "var(--driftwood)" }}>{TEAMS.DRIFTWOOD.name}</b> — over six counting rounds (Thu–Sat) at Bandon Dunes.
           It's a Ryder-Cup-style team match: every round is worth cup points, and the team that wins the cup wins the trip.
         </p>
       </Section>
@@ -59,8 +60,8 @@ export function Rules() {
         <ul style={{ margin: 0, paddingLeft: 18 }}>
           <li>Each round, the team with the better <b>combined result</b> wins <b>1 cup point</b>. Ties split <b>0.5 / 0.5</b>.</li>
           <li>The <b>Saturday afternoon finale (Round 6) is worth double — 2 points</b>.</li>
-          <li><b>7 points</b> are available in total. <b>First to 4 wins the cup; 3.5 retains it.</b></li>
-          <li>The board tracks clinch state — <b>CLINCHED / RETAINS / ALIVE / MUST WIN FINALE / ELIMINATED</b> — like a real broadcast.</li>
+          <li><b>7 points</b> are available in total. <b>First to 4 wins the cup.</b> If it ends <b>3.5–3.5</b>, the tie is broken by a <b>sudden-death putting contest.</b></li>
+          <li>The board tracks clinch state — <b>CLINCHED / PUTT-OFF / ALIVE / MUST WIN FINALE / ELIMINATED</b> — like a real broadcast.</li>
         </ul>
       </Section>
 

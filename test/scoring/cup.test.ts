@@ -33,14 +33,16 @@ describe("clinchState", () => {
   it("CLINCHED when lead exceeds remaining", () => {
     expect(clinchState(4, 1, 2).gorse).toBe("CLINCHED");
   });
-  it("retains at 3.5 of 7 (cannot be caught past tie)", () => {
-    // 3.5 vs 2.5, 1 available: leader (holder) stays >= tie -> RETAINS
-    expect(clinchState(3.5, 2.5, 1).gorse).toBe("RETAINS");
+  it("PUTT-OFF at 3.5 when the opponent can at best force a 3.5–3.5 tie", () => {
+    // 3.5 vs 2.5, 1 available: opponent tops out at 3.5 -> worst case is a putt-off
+    expect(clinchState(3.5, 2.5, 1).gorse).toBe("PUTT-OFF");
+  });
+  it("PUTT-OFF for both when the cup finishes 3.5–3.5", () => {
+    expect(clinchState(3.5, 3.5, 0)).toEqual({ gorse: "PUTT-OFF", driftwood: "PUTT-OFF" });
   });
   it("surfaces MUST WIN FINALE when a single finale (available=2) decides it", () => {
-    // label(2,3,false): trailing non-holder, available===2, me<them -> MUST WIN FINALE
+    // label(2,3): trailing team, available===2, me<them -> MUST WIN FINALE
     expect(clinchState(3, 2, 2).driftwood).toBe("MUST WIN FINALE");
-    // label(2,3,true): trailing holder, available===2, me<them -> MUST WIN FINALE
     expect(clinchState(2, 3, 2).gorse).toBe("MUST WIN FINALE");
   });
 });

@@ -25,8 +25,8 @@ export const PLAYERS: Record<string, { name: string; first: string; team: TeamId
 };
 
 export const TEAMS: Record<TeamId, { name: string; color: string; roster: string[] }> = {
-  GORSE:     { name: "Gorse",     color: "#F4A300", roster: ["desabio", "laflair", "stenzel", "meissner"] },
-  DRIFTWOOD: { name: "Driftwood", color: "#2E8BFF", roster: ["taheri", "grattan", "sloan", "johnson"] },
+  GORSE:     { name: "Brucettes", color: "#F4A300", roster: ["desabio", "laflair", "stenzel", "meissner"] },
+  DRIFTWOOD: { name: "Peter's Enablers", color: "#2E8BFF", roster: ["taheri", "grattan", "sloan", "johnson"] },
 };
 
 export interface TeeGroup {

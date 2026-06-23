@@ -31,10 +31,11 @@ describe("holePoints — scale and floor", () => {
 });
 
 describe("clinchState — elimination branches", () => {
-  it("non-holder is ELIMINATED when its max can't reach RETAIN", () => {
+  it("ELIMINATED when the opponent has already clinched (5 vs 0, 2 left)", () => {
     expect(clinchState(5, 0, 2).driftwood).toBe("ELIMINATED");
   });
-  it("holder is ELIMINATED when it can't reach WIN and opponent passes RETAIN", () => {
+  it("ELIMINATED when its own max can't even force a 3.5 tie", () => {
+    // gorse maxes at 1+2=3 < 3.5, so it can neither win nor reach a putt-off
     expect(clinchState(1, 5, 2).gorse).toBe("ELIMINATED");
   });
 });

@@ -111,7 +111,7 @@ export function Home() {
           <p className="bc-kicker">Bandon Dunes Resort · Oregon</p>
           <h1 className="bc-title">Bandon Cup<small>— 2026 —</small></h1>
           <div className="bc-sub">
-            <span className="g">Gorse</span><span className="x">vs</span><span className="d">Driftwood</span>
+            <span className="g">{TEAMS.GORSE.name}</span><span className="x">vs</span><span className="d">{TEAMS.DRIFTWOOD.name}</span>
             <span className="x">·</span><span>Jun 3–7</span>
           </div>
           <span className="bc-status">
