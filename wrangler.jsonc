@@ -13,18 +13,20 @@
 		{
 			"binding": "DB",
 			"database_name": "bandon-cup",
-			"database_id": "c0087b61-d608-4915-a271-605de0e0450f",
+			// Run `npx wrangler d1 create bandon-cup` and paste the returned id here.
+			"database_id": "<YOUR_D1_DATABASE_ID>",
 			"migrations_dir": "migrations"
 		}
 	],
 	"kv_namespaces": [
 		{
+			// Run `npx wrangler kv namespace create SESSIONS` and paste the returned id here.
 			"binding": "SESSIONS",
-			"id": "bcc24cbe70ca4159b8fffc14df28aa2b"
+			"id": "<YOUR_KV_NAMESPACE_ID>"
 		}
-	],
-	"vars": {
-		"PASSCODE": "bandon26",
-		"ADMIN_PASSCODE": "commish26"
-	}
+	]
+	// PASSCODE and ADMIN_PASSCODE are set as encrypted secrets:
+	//   echo "<value>" | npx wrangler secret put PASSCODE
+	//   echo "<value>" | npx wrangler secret put ADMIN_PASSCODE
+	// For local dev (`vite dev`), put them in .dev.vars (gitignored).
 }

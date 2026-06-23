@@ -1,0 +1,9 @@
+# Copy to .dev.vars for local dev (`vite dev`). .dev.vars is gitignored.
+# In production these are set as encrypted secrets via `wrangler secret put` —
+# see wrangler.jsonc.
+
+# Shared trip passcode — anyone with this can view/enter scores.
+PASSCODE="changeme"
+
+# Admin passcode — unlocks handicaps, settings, and Book commish actions.
+ADMIN_PASSCODE="changeme-admin"

@@ -1,12 +1,19 @@
 {
   "name": "bandon",
   "version": "1.0.0",
-  "description": "",
+  "description": "Mobile-first golf-trip scoring app with a broadcast-style Ryder Cup leaderboard, on Cloudflare Workers + D1.",
   "private": true,
   "type": "module",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "golf",
+    "ryder-cup",
+    "scoring",
+    "cloudflare-workers",
+    "d1",
+    "pwa"
+  ],
+  "author": "Erik Taheri",
+  "license": "MIT",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
