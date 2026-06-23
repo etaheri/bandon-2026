@@ -50,7 +50,7 @@ const svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http
 
   <text x="84" y="462" font-family="Impact, 'Arial Black', sans-serif" font-size="48" font-style="italic" font-weight="900"
         stroke="#04110b" stroke-width="1.6">
-    <tspan fill="#F4A300">BRUCETTES</tspan><tspan fill="#cfe0ff" font-size="30" dx="14">vs</tspan><tspan fill="#2E8BFF" dx="14">PETER&#8217;S ENABLERS</tspan>
+    <tspan fill="#F4A300">GORSE</tspan><tspan fill="#cfe0ff" font-size="48" dx="22">vs</tspan><tspan fill="#2E8BFF" dx="22">DRIFTWOOD</tspan>
   </text>
 
   <text x="86" y="552" font-family="'Arial Narrow', Impact, sans-serif" font-size="33" font-weight="700"
